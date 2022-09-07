@@ -1,0 +1,445 @@
+import Account from "../models/account.model.js";
+import Department from "../models/department.model.js";
+import Enterprise from "../models/enterprise.model.js";
+import Assignment from "../models/assigment.model.js";
+import mongoose from "mongoose";
+
+export const createAccount = async (req, res) => {
+  try {
+    const { name, password, birthday, lop, address, role, img } = req.body;
+    const user = await Account.findOne({ name });
+
+    if (user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Username already exist" });
+    }
+
+    const newUser = new Account({
+      name,
+      password,
+      birthday,
+      lop,
+      address,
+      role,
+      img,
+    });
+    await newUser.save();
+
+    res.status(200).json({
+      success: true,
+      message: "User created successfully",
+    });
+  } catch (error) {
+    console.log("====================================");
+    console.log(error);
+    console.log("====================================");
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+export const createAccountDepartment = async (req, res) => {
+  try {
+    const { nameDepartment, descriptionDepartment, idManageDepart } = req.body;
+    const account = await Department.findOne({ nameDepartment });
+
+    if (account) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Department already exist" });
+    }
+    const newUser = new Department({
+      nameDepartment,
+      descriptionDepartment,
+      idManageDepart,
+    });
+    await newUser.save();
+    res.status(200).json({
+      success: true,
+      message: "Department created successfully",
+    });
+  } catch (error) {
+    console.log("====================================");
+    console.log(error);
+    console.log("====================================");
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+export const createAccountStudent = async (req, res) => {
+  try {
+    const {
+      name,
+      password,
+      birthday,
+      idDepartment,
+      idTeacher,
+      lop,
+      address,
+      role,
+      img,
+    } = req.body;
+    const account = await Account.findOne({ name });
+
+    if (account) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Account already exist" });
+    }
+    const newUser = new Account({
+      name,
+      password,
+      birthday,
+      idDepartment,
+      idTeacher,
+      lop,
+      address,
+      role,
+      img,
+    });
+    await newUser.save();
+    res.status(200).json({
+      success: true,
+      message: "Account created successfully",
+    });
+  } catch (error) {
+    console.log("====================================");
+    console.log(error);
+    console.log("====================================");
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+export const updateAccountStudent = async (req, res) => {
+  try {
+    const {
+      name,
+      password,
+      birthday,
+      idDepartment,
+      idTeacher,
+      lop,
+      address,
+      role,
+      img,
+    } = req.body;
+
+    const updatedPost = await Account.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        name,
+        password,
+        birthday,
+        idDepartment,
+        idTeacher,
+        lop,
+        address,
+        role,
+        img,
+      }
+    );
+    if (updatedPost) {
+      res.status(200).json({ message: "Update successfully" });
+    } else {
+      res.status(404).json({ message: "Update fail" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server error ~ updatePost" });
+  }
+};
+
+export const deleteAccountStudent = async (req, res) => {
+  try {
+    const account = await Account.findOneAndDelete({
+      _id: req.params.id,
+    });
+    if (account) {
+      res.status(200).json({ success: true, message: "Deleted successfully!" });
+    } else {
+      res.status(404).json({ success: false, message: "Deleted fail!" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server error ~ deleteAccountStudent" });
+  }
+};
+
+export const createAccountEnterPrise = async (req, res) => {
+  try {
+    const { nameEnterprise, imgEnterprise, descriptionEnterprise } = req.body;
+    const account = await Enterprise.findOne({ nameEnterprise });
+
+    if (account) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Account already exist" });
+    }
+    const newUser = new Enterprise({
+      nameEnterprise,
+      imgEnterprise,
+      descriptionEnterprise,
+    });
+    await newUser.save();
+    res.status(200).json({
+      success: true,
+      message: "Account created successfully",
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+export const updateEnterprise = async (req, res) => {
+  try {
+    const { nameEnterprise, imgEnterprise, descriptionEnterprise } = req.body;
+    const updatedPost = await Enterprise.findOneAndUpdate(
+      { _id: req.params.id },
+      { nameEnterprise, imgEnterprise, descriptionEnterprise }
+    );
+    if (updatedPost) {
+      res.status(200).json({ message: "Update successfully" });
+    } else {
+      res.status(404).json({ message: "Update fail" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server error ~ updatePost" });
+  }
+};
+
+export const deleteEnterprise = async (req, res) => {
+  // const userID = req.params.id;
+  try {
+    const deletedEnterprise = await Enterprise.findOneAndDelete({
+      _id: req.params.id,
+    });
+    if (deletedEnterprise) {
+      res.status(200).json({ success: true, message: "Deleted successfully!" });
+    } else {
+      res.status(404).json({ success: false, message: "Deleted fail!" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server error ~ deleteEnterprise" });
+  }
+};
+
+export const searchEnterprise = async (req, res) => {
+  try {
+    const p = req.params.q;
+    const searchEnterprise = await Enterprise.find({
+      nameEnterprise: { $regex: ".*" + q + ".*" },
+    }).limit(10);
+    res.status(200).json({ data: searchEnterprise });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ searchEnterprise" });
+  }
+};
+
+export const showAllEnterprise = async (req, res) => {
+  try {
+    const ListData = await Enterprise.find({ lop: req.params.lop });
+
+    res.status(200).json({ success: true, data: ListData });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ getAllStudent" });
+  }
+};
+
+export const addRequestEnterprise = async (req, res) => {
+  try {
+    const { isAccept, idEnterprise } = req.body;
+
+    const updatedPost = await Account.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        isAccept: isAccept,
+        idEnterprise: mongoose.Types.ObjectId(idEnterprise),
+      }
+    );
+    if (updatedPost) {
+      res.status(200).json({ message: "Update successfully" });
+    } else {
+      res.status(404).json({ message: "Update fail" });
+    }
+  } catch (error) {
+    console.log("====================================");
+    console.log(error);
+    console.log("====================================");
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ addRequestEnterprise" });
+  }
+};
+
+export const feedBackEnterprise = async (req, res) => {
+  try {
+    const { commentEnterprise } = req.body;
+    const updatedPost = await Account.findOneAndUpdate(
+      { _id: req.params.id },
+      { commentEnterprise }
+    );
+    if (updatedPost) {
+      res.status(200).json({ message: "Update successfully" });
+    } else {
+      res.status(404).json({ message: "Update fail" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ addRequestEnterprise" });
+  }
+};
+
+export const showOnlyStudent = async (req, res) => {
+  try {
+    const ListStudents = await Account.find({ role: "student" }).select(
+      "-password"
+    );
+
+    res.status(200).json({ success: true, data: ListStudents });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ showOnlyStudent" });
+  }
+};
+
+export const addDepartmentManage = async (req, res) => {
+  try {
+    const { idDepartment, idTeacher } = req.body;
+    const updatedPost = await Account.findOneAndUpdate(
+      { _id: req.params.id },
+      { idDepartment, idTeacher }
+    );
+    if (updatedPost) {
+      res.status(200).json({ message: "Update successfully" });
+    } else {
+      res.status(404).json({ message: "Update fail" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ addDepartmentManage" });
+  }
+};
+
+export const listStudentHasManage = async (req, res) => {
+  try {
+    const ListStudents = await Account.find({ idTeacher: req.params.id });
+
+    res.json({ success: true, data: ListStudents });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ listStudentHasManage" });
+  }
+};
+
+export const addAssignment = async (req, res) => {
+  try {
+    const { nameAss, linkFile, idStudent, date } = req.body;
+    const account = await Assignment.findOne({ nameAss });
+
+    if (account) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Account already exist" });
+    }
+    const newUser = new Assignment({
+      nameAss,
+      linkFile,
+      idStudent,
+      date,
+    });
+    await newUser.save();
+    res.status(200).json({
+      success: true,
+      message: "Account created successfully",
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ addAssignment" });
+  }
+};
+
+export const reviewAssignment = async (req, res) => {
+  try {
+    const { isOK, comment, point } = req.body;
+    const updatedPost = await Assignment.findOneAndUpdate(
+      { _id: req.params.id },
+      { isOK, comment, point }
+    );
+    if (updatedPost) {
+      res.status(200).json({ message: "Update successfully" });
+    } else {
+      res.status(404).json({ message: "Update fail" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ reviewAssignment" });
+  }
+};
+
+export const searchIdTeacher = async (req, res) => {
+  try {
+    const ListStudents = await Account.find({ idTeacher: req.params.q });
+
+    res.status(200).json({ success: true, data: ListStudents });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ searchIdTeacher" });
+  }
+};
+
+export const searchIdDepart = async (req, res) => {
+  try {
+    const ListStudents = await Account.find({ idDepartment: req.params.q });
+
+    res.status(200).json({ success: true, data: ListStudents });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ searchIdDepart" });
+  }
+};
+
+export const login = async (req, res) => {
+  const username = req.body.username;
+  const password = req.body.password;
+  try {
+    const find = await Account.findOne({
+      name: username,
+      password: password,
+    });
+
+    if (!find) {
+      return res.status(400).json({
+        success: false,
+        message: "Tên đăng nhập hoặc mật khẩu không đúng!",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      data: find,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error ~ login" });
+  }
+};
+
+export const showDetailEnterprise = async (req, res) => {
+  try {
+    const data = await Enterprise.findOne({ _id: req.params.id });
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error ~ login" });
+  }
+};
