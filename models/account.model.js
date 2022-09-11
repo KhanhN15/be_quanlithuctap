@@ -19,8 +19,8 @@ const accountSchema = new Schema({
     ref: "Department",
   },
   idTeacher: {
-    type: String,
-    required: false,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Account",
   },
   lop: {
     type: String,

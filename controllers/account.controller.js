@@ -163,6 +163,37 @@ export const deleteAccountStudent = async (req, res) => {
   }
 };
 
+export const deleteAss = async (req, res) => {
+  try {
+    const account = await Assignment.findOneAndDelete({
+      _id: req.params.id,
+    });
+    if (account) {
+      res.status(200).json({ success: true, message: "Deleted successfully!" });
+    } else {
+      res.status(404).json({ success: false, message: "Deleted fail!" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server error ~ deleteAccountStudent" });
+  }
+};
+
+export const deleteAcc = async (req, res) => {
+  try {
+    const account = await Account.findOneAndUpdate(
+      { _id: req.params.id },
+      { idEnterprise: "", isAccept: "wait" }
+    );
+    if (account) {
+      res.status(200).json({ success: true, message: "Deleted successfully!" });
+    } else {
+      res.status(404).json({ success: false, message: "Deleted fail!" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server error ~ deleteAccountStudent" });
+  }
+};
+
 export const createAccountEnterPrise = async (req, res) => {
   try {
     const { nameEnterprise, imgEnterprise, descriptionEnterprise } = req.body;
@@ -235,9 +266,34 @@ export const searchEnterprise = async (req, res) => {
   }
 };
 
+export const findEnterpriseById = async (req, res) => {
+  try {
+    const searchEnterprise = await Enterprise.findOne({
+      _id: req.params.id,
+    });
+    res.status(200).json({ data: searchEnterprise });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ searchEnterprise" });
+  }
+};
+
 export const showAllEnterprise = async (req, res) => {
   try {
     const ListData = await Enterprise.find({ lop: req.params.lop });
+
+    res.status(200).json({ success: true, data: ListData });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ getAllStudent" });
+  }
+};
+
+export const listAllDepart = async (req, res) => {
+  try {
+    const ListData = await Department.find({});
 
     res.status(200).json({ success: true, data: ListData });
   } catch (error) {
@@ -306,6 +362,34 @@ export const showOnlyStudent = async (req, res) => {
   }
 };
 
+export const showOnlyStudentNoChoose = async (req, res) => {
+  try {
+    const ListStudents = await Account.find({
+      role: "student",
+    }).select("-password");
+
+    res.status(200).json({ success: true, data: ListStudents });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ showOnlyStudent" });
+  }
+};
+
+export const showOnlyTeacher = async (req, res) => {
+  try {
+    const ListStudents = await Account.find({ role: "teacher" }).select(
+      "-password"
+    );
+
+    res.status(200).json({ success: true, data: ListStudents });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ showOnlyStudent" });
+  }
+};
+
 export const addDepartmentManage = async (req, res) => {
   try {
     const { idDepartment, idTeacher } = req.body;
@@ -337,9 +421,40 @@ export const listStudentHasManage = async (req, res) => {
   }
 };
 
+export const listStudentHasManageDepartment = async (req, res) => {
+  try {
+    const ListStudents = await Account.find({
+      role: "student",
+      idDepartment: req.params.id,
+    }).populate("idEnterprise");
+
+    res.json({ success: true, data: ListStudents });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ listStudentHasManage" });
+  }
+};
+
+export const listCombineTeacherDepartment = async (req, res) => {
+  try {
+    const { idDepartment, idTeacher } = req.body;
+    const ListStudents = await Account.find({
+      idDepartment,
+      idTeacher,
+    });
+
+    res.json({ success: true, data: ListStudents });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ listStudentHasManage" });
+  }
+};
+
 export const addAssignment = async (req, res) => {
   try {
-    const { nameAss, linkFile, idStudent, date } = req.body;
+    const { nameAss, idStudent, date } = req.body;
     const account = await Assignment.findOne({ nameAss });
 
     if (account) {
@@ -349,9 +464,12 @@ export const addAssignment = async (req, res) => {
     }
     const newUser = new Assignment({
       nameAss,
-      linkFile,
-      idStudent,
+      idStudent: mongoose.Types.ObjectId(idStudent),
       date,
+      isOk: "wait",
+      isXacNhan: "wait",
+      point: "",
+      comment: "",
     });
     await newUser.save();
     res.status(200).json({
@@ -367,10 +485,29 @@ export const addAssignment = async (req, res) => {
 
 export const reviewAssignment = async (req, res) => {
   try {
-    const { isOK, comment, point } = req.body;
+    const { isXacNhan, comment, point } = req.body;
     const updatedPost = await Assignment.findOneAndUpdate(
       { _id: req.params.id },
-      { isOK, comment, point }
+      { isXacNhan, comment, point }
+    );
+    if (updatedPost) {
+      res.status(200).json({ message: "Update successfully" });
+    } else {
+      res.status(404).json({ message: "Update fail" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ reviewAssignment" });
+  }
+};
+
+export const submitHomeWork = async (req, res) => {
+  try {
+    const { ok, linkFile } = req.body;
+    const updatedPost = await Assignment.findOneAndUpdate(
+      { _id: req.params.id },
+      { ok: ok, linkFile }
     );
     if (updatedPost) {
       res.status(200).json({ message: "Update successfully" });
@@ -441,5 +578,129 @@ export const showDetailEnterprise = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server error ~ login" });
+  }
+};
+
+export const showDepart = async (req, res) => {
+  try {
+    const data = await Department.findOne({ _id: req.params.id });
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error ~ login" });
+  }
+};
+
+export const findUser = async (req, res) => {
+  try {
+    const data = await Account.findOne({ _id: req.params.id })
+      .populate("idEnterprise")
+      .populate("idTeacher")
+      .populate("idDepartment");
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error ~ login" });
+  }
+};
+
+export const showAssignById = async (req, res) => {
+  try {
+    const data = await Assignment.find({ idStudent: req.params.id });
+
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error ~ login" });
+  }
+};
+
+export const showAssignOneById = async (req, res) => {
+  try {
+    const data = await Assignment.findOne({ _id: req.params.id });
+
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error ~ login" });
+  }
+};
+
+export const acceptTeacher = async (req, res) => {
+  try {
+    const { isTeacherAccept } = req.body;
+
+    const updatedPost = await Account.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        isTeacherAccept: isTeacherAccept,
+      }
+    );
+    if (updatedPost) {
+      res.status(200).json({ message: "Update successfully" });
+    } else {
+      res.status(404).json({ message: "Update fail" });
+    }
+  } catch (error) {
+    console.log("====================================");
+    console.log(error);
+    console.log("====================================");
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ addRequestEnterprise" });
+  }
+};
+
+export const showTeacherByDepartment = async (req, res) => {
+  try {
+    const { teacher } = req.body;
+    const ListStudents = await Account.find({
+      role: "student",
+      idTeacher: teacher,
+      idDepartment: req.params.id,
+    }).select("-password");
+
+    res.status(200).json({ success: true, data: ListStudents });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ addRequestEnterprise" });
+  }
+};
+
+export const showListStudentFromEnterprise = async (req, res) => {
+  try {
+    const ListStudents = await Account.find({
+      role: "student",
+      idEnterprise: req.params.id,
+    });
+
+    res.json({ success: true, data: ListStudents });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ listStudentHasManage" });
+  }
+};
+
+export const showListStudent = async (req, res) => {
+  try {
+    const ListStudents = await Account.find({
+      role: "student",
+    });
+
+    res.json({ success: true, data: ListStudents });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ listStudentHasManage" });
   }
 };
