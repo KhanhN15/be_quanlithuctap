@@ -78,6 +78,8 @@ export const createAccountStudent = async (req, res) => {
       address,
       role,
       img,
+      isAccept,
+      isTeacherAccept,
     } = req.body;
     const account = await Account.findOne({ name });
 
@@ -87,15 +89,7 @@ export const createAccountStudent = async (req, res) => {
         .json({ success: false, message: "Account already exist" });
     }
     const newUser = new Account({
-      name,
-      password,
-      birthday,
-      idDepartment,
-      idTeacher,
-      lop,
-      address,
-      role,
-      img,
+      ...req.body,
     });
     await newUser.save();
     res.status(200).json({
@@ -281,7 +275,7 @@ export const findEnterpriseById = async (req, res) => {
 
 export const showAllEnterprise = async (req, res) => {
   try {
-    const ListData = await Enterprise.find({ lop: req.params.lop });
+    const ListData = await Enterprise.find({});
 
     res.status(200).json({ success: true, data: ListData });
   } catch (error) {
@@ -693,9 +687,61 @@ export const showListStudentFromEnterprise = async (req, res) => {
 
 export const showListStudent = async (req, res) => {
   try {
-    const ListStudents = await Account.find({
-      role: "student",
+    const ListStudents = await Account.find({});
+
+    res.json({ success: true, data: ListStudents });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ listStudentHasManage" });
+  }
+};
+
+export const ShowDetailAssignByStudent = async (req, res) => {
+  try {
+    const ListStudents = await Assignment.find({
+      idStudent: req.params.id,
     });
+
+    res.json({ success: true, data: ListStudents });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ listStudentHasManage" });
+  }
+};
+
+export const editAccount = async (req, res) => {
+  try {
+    const { name, birthday, address } = req.body;
+
+    const updatedPost = await Account.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        name,
+        birthday,
+        address,
+      }
+    );
+    if (updatedPost) {
+      res.status(200).json({ message: "Update successfully" });
+    } else {
+      res.status(404).json({ message: "Update fail" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server error ~ updatePost" });
+  }
+};
+
+export const getStudentHasEnterprise = async (req, res) => {
+  try {
+    const ListStudents = await Account.find({
+      isAccept: "done",
+      isTeacherAccept: "done",
+    })
+      .populate("idEnterprise")
+      .populate("idTeacher")
+      .populate("idDepartment");
 
     res.json({ success: true, data: ListStudents });
   } catch (error) {

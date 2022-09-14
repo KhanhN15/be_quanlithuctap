@@ -38,6 +38,9 @@ import {
   showListStudentFromEnterprise,
   deleteAcc,
   showListStudent,
+  ShowDetailAssignByStudent,
+  editAccount,
+  getStudentHasEnterprise,
 } from "../controllers/account.controller.js";
 const router = express.Router();
 
@@ -45,7 +48,7 @@ router.post("/create-account", createAccount);
 router.post("/create-account-department", createAccountDepartment);
 router.post("/create-account-student", createAccountStudent);
 router.put("/update-account-student/:id", updateAccountStudent);
-router.put("/delete-account-student/:id", deleteAccountStudent);
+router.delete("/delete-account-student/:id", deleteAccountStudent);
 router.post("/create-account-enterprise", createAccountEnterPrise);
 router.put("/update-account-enterprise/:id", updateEnterprise);
 router.delete("/delete-account-enterprise/:id", deleteEnterprise);
@@ -94,5 +97,8 @@ router.get("/show-teacher-by-department/:id", showTeacherByDepartment);
 router.get("/show-depart/:id", showDepart);
 router.post("/login", login);
 router.get("/show-list-student", showListStudent);
+router.get("/show-detail-assign-by-student/:id", ShowDetailAssignByStudent);
+router.put("/edit-account/:id", editAccount);
+router.get("/get-student-has-enterprise", getStudentHasEnterprise);
 
 export default router;
