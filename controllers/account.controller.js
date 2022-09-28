@@ -3,6 +3,8 @@ import Department from "../models/department.model.js";
 import Enterprise from "../models/enterprise.model.js";
 import Assignment from "../models/assigment.model.js";
 import mongoose from "mongoose";
+import User from "../models/users.model.js";
+import e from "express";
 
 export const createAccount = async (req, res) => {
   try {
@@ -655,14 +657,32 @@ export const acceptTeacher = async (req, res) => {
 
 export const showTeacherByDepartment = async (req, res) => {
   try {
-    const { teacher } = req.body;
     const ListStudents = await Account.find({
-      role: "student",
-      idTeacher: teacher,
+      role: "teacher",
+      // idTeacher: teacher,
       idDepartment: req.params.id,
     }).select("-password");
 
     res.status(200).json({ success: true, data: ListStudents });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ addRequestEnterprise" });
+  }
+};
+
+export const showListByDepartment = async (req, res) => {
+  try {
+    const { teacher } = req.body;
+    const ListStudents = await Account.find({
+      role: "student",
+      idTeacher: req.params.idTeacher,
+      idDepartment: req.params.id,
+    }).select("-password");
+
+    if (ListStudents) {
+      return res.status(200).json({ success: true, data: ListStudents });
+    }
   } catch (error) {
     res
       .status(500)
@@ -748,5 +768,87 @@ export const getStudentHasEnterprise = async (req, res) => {
     res
       .status(500)
       .json({ success: false, message: "Server error ~ listStudentHasManage" });
+  }
+};
+
+export const averageMax = async (req, res) => {
+  try {
+    const ListStudents = await User.find({ age: { $gt: 20 } });
+
+    res.json({ success: true, data: ListStudents });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ listStudentHasManage" });
+  }
+};
+
+export const averageMin = async (req, res) => {
+  try {
+    const ListStudents = await User.find({ age: { $lt: 20 } });
+
+    res.json({ success: true, data: ListStudents });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ listStudentHasManage" });
+  }
+};
+
+export const allUsers = async (req, res) => {
+  try {
+    const ListStudents = await User.find({});
+
+    res.json({ success: true, data: ListStudents });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ listStudentHasManage" });
+  }
+};
+
+export const saveData = async (req, res) => {
+  try {
+    const newUser = new User({
+      name: "Khoi",
+      age: "10",
+    });
+    await newUser.save();
+    res.status(200).json({
+      success: true,
+      message: "Account created successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ addAssignment" });
+  }
+};
+
+export const statistic = async (req, res) => {
+  try {
+    const reqq = req.params.q;
+    let ListStudents = [];
+    if (reqq == "max") {
+      ListStudents = await User.find({ age: { $gt: 20 } });
+    } else if (reqq == "min") {
+      ListStudents = await User.find({ age: { $lt: 20 } });
+    } else {
+      ListStudents = await User.find({});
+    }
+    res.json({ success: true, data: ListStudents });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ listStudentHasManage" });
+  }
+};
+
+export const indexHere = async (req, res) => {
+  try {
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };

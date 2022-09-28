@@ -41,6 +41,13 @@ import {
   ShowDetailAssignByStudent,
   editAccount,
   getStudentHasEnterprise,
+  averageMax,
+  averageMin,
+  allUsers,
+  saveData,
+  statistic,
+  indexHere,
+  showListByDepartment,
 } from "../controllers/account.controller.js";
 const router = express.Router();
 
@@ -93,6 +100,7 @@ router.get("/find-user/:id", findUser);
 router.get("/show-only-student-no-choose", showOnlyStudentNoChoose);
 router.get("/show-depart", listAllDepart);
 router.get("/show-teacher-by-department/:id", showTeacherByDepartment);
+router.get("/show-teacher-here/:id/:idTeacher", showListByDepartment);
 // export default login;
 router.get("/show-depart/:id", showDepart);
 router.post("/login", login);
@@ -100,5 +108,12 @@ router.get("/show-list-student", showListStudent);
 router.get("/show-detail-assign-by-student/:id", ShowDetailAssignByStudent);
 router.put("/edit-account/:id", editAccount);
 router.get("/get-student-has-enterprise", getStudentHasEnterprise);
+
+router.get("/average-max", averageMax);
+router.get("/average-min", averageMin);
+router.get("/all-user", allUsers);
+router.post("/save", saveData);
+router.get("/statistic/:q", statistic);
+router.get("/index", indexHere);
 
 export default router;
