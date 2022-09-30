@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const accountSchema = new Schema({
+  msv: {
+    type: String,
+    required: false,
+  },
   name: {
     type: String,
     required: true,

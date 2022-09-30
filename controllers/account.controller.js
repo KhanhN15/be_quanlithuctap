@@ -422,7 +422,9 @@ export const listStudentHasManageDepartment = async (req, res) => {
     const ListStudents = await Account.find({
       role: "student",
       idDepartment: req.params.id,
-    }).populate("idEnterprise");
+    })
+      .populate("idEnterprise")
+      .populate("idDepartment");
 
     res.json({ success: true, data: ListStudents });
   } catch (error) {
@@ -546,7 +548,7 @@ export const login = async (req, res) => {
   const password = req.body.password;
   try {
     const find = await Account.findOne({
-      name: username,
+      msv: username,
       password: password,
     });
 
@@ -678,7 +680,9 @@ export const showListByDepartment = async (req, res) => {
       role: "student",
       idTeacher: req.params.idTeacher,
       idDepartment: req.params.id,
-    }).select("-password");
+    })
+      .populate("idEnterprise")
+      .populate("idDepartment");
 
     if (ListStudents) {
       return res.status(200).json({ success: true, data: ListStudents });
@@ -733,7 +737,7 @@ export const ShowDetailAssignByStudent = async (req, res) => {
 
 export const editAccount = async (req, res) => {
   try {
-    const { name, birthday, address } = req.body;
+    const { name, birthday, address, lop } = req.body;
 
     const updatedPost = await Account.findOneAndUpdate(
       { _id: req.params.id },
@@ -741,6 +745,7 @@ export const editAccount = async (req, res) => {
         name,
         birthday,
         address,
+        lop,
       }
     );
     if (updatedPost) {
