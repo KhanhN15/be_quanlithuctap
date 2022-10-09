@@ -48,18 +48,26 @@ import {
   statistic,
   indexHere,
   showListByDepartment,
+  pdfSubmit,
+  pdfStatusSubmit,
+  showPdf,
+  createAccountEnterprise,
+  search,
+  addComments,
 } from "../controllers/account.controller.js";
 const router = express.Router();
 
 router.post("/create-account", createAccount);
 router.post("/create-account-department", createAccountDepartment);
 router.post("/create-account-student", createAccountStudent);
+router.post("/create-account-dn", createAccountEnterprise);
 router.put("/update-account-student/:id", updateAccountStudent);
 router.delete("/delete-account-student/:id", deleteAccountStudent);
 router.post("/create-account-enterprise", createAccountEnterPrise);
 router.put("/update-account-enterprise/:id", updateEnterprise);
 router.delete("/delete-account-enterprise/:id", deleteEnterprise);
 router.get("/search-enterprise/:q", searchEnterprise);
+router.get("/search-full/:q", search);
 router.get("/find-enterprise-by-id/:id", findEnterpriseById);
 router.get(
   "/show-list-student-from-enterprise/:id",
@@ -70,6 +78,7 @@ router.get("/show-detail-enterprise/:id", showDetailEnterprise);
 
 // dang ky thuc tap
 router.put("/add-enterprise/:id", addRequestEnterprise);
+router.put("/add-comment/:id", addComments);
 router.put("/feed-back-enterprise/:id", feedBackEnterprise);
 
 // show list student duoc giang vien quan li
@@ -89,6 +98,9 @@ router.put("/submit-homework/:id", submitHomeWork);
 router.get("/show-assign/:id", showAssignById);
 router.get("/show-assign-one/:id", showAssignOneById);
 router.put("/accept-teacher/:id", acceptTeacher);
+router.put("/pdf-file/:id", pdfSubmit);
+router.put("/pdf-status/:id", pdfStatusSubmit);
+router.get("/show-all-pdf-course/:id", showPdf);
 router.delete("/delete-ass/:id", deleteAss);
 router.delete("/delete-acc/:id", deleteAcc);
 

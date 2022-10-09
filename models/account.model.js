@@ -16,7 +16,7 @@ const accountSchema = new Schema({
   },
   birthday: {
     type: String,
-    required: true,
+    required: false,
   },
   idDepartment: {
     type: mongoose.Schema.Types.ObjectId,
@@ -54,9 +54,22 @@ const accountSchema = new Schema({
     type: String,
     required: false,
   },
+  comment: {
+    type: String,
+    required: false,
+  },
   img: {
     type: String,
     required: true,
+  },
+  file: {
+    type: String,
+    require: false,
+  },
+  isReview: {
+    type: String,
+    required: false,
+    default: "wait",
   },
 });
 // export collection name 'users' storing login infomation

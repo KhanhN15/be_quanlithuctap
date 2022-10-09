@@ -106,6 +106,32 @@ export const createAccountStudent = async (req, res) => {
   }
 };
 
+export const createAccountEnterprise = async (req, res) => {
+  try {
+    const { name, password, idEnterprise, address, role, img } = req.body;
+    const account = await Account.findOne({ name });
+
+    if (account) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Account already exist" });
+    }
+    const newUser = new Account({
+      ...req.body,
+    });
+    await newUser.save();
+    res.status(200).json({
+      success: true,
+      message: "Account created successfully",
+    });
+  } catch (error) {
+    console.log("====================================");
+    console.log(error);
+    console.log("====================================");
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 export const updateAccountStudent = async (req, res) => {
   try {
     const {
@@ -262,6 +288,25 @@ export const searchEnterprise = async (req, res) => {
   }
 };
 
+export const search = async (req, res) => {
+  try {
+    const p = req.params.q;
+    const searchEnterprise = await Account.find({
+      $and: [{ role: "student" }],
+      $or: [
+        { name: { $regex: ".*" + p + ".*" } },
+        { msv: { $regex: ".*" + p + ".*" } },
+        { lop: { $regex: ".*" + p + ".*" } },
+      ],
+    });
+    res.status(200).json({ data: searchEnterprise });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ searchEnterprise" });
+  }
+};
+
 export const findEnterpriseById = async (req, res) => {
   try {
     const searchEnterprise = await Enterprise.findOne({
@@ -344,6 +389,29 @@ export const feedBackEnterprise = async (req, res) => {
   }
 };
 
+export const addComments = async (req, res) => {
+  try {
+    const { comment } = req.body;
+
+    const updatedPost = await Account.findOneAndUpdate(
+      { _id: req.params.id },
+      { comment }
+    );
+    if (updatedPost) {
+      res.status(200).json({ message: "Update successfully" });
+    } else {
+      res.status(404).json({ message: "Update fail" });
+    }
+  } catch (error) {
+    console.log("====================================");
+    console.log(error);
+    console.log("====================================");
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ addRequestEnterprise" });
+  }
+};
+
 export const showOnlyStudent = async (req, res) => {
   try {
     const ListStudents = await Account.find({ role: "student" }).select(
@@ -362,7 +430,7 @@ export const showOnlyStudentNoChoose = async (req, res) => {
   try {
     const ListStudents = await Account.find({
       role: "student",
-    }).select("-password");
+    }).populate("idDepartment");
 
     res.status(200).json({ success: true, data: ListStudents });
   } catch (error) {
@@ -519,9 +587,63 @@ export const submitHomeWork = async (req, res) => {
   }
 };
 
+export const pdfSubmit = async (req, res) => {
+  try {
+    const { filePdf } = req.body;
+    const updatedPost = await Account.findOneAndUpdate(
+      { _id: req.params.id },
+      { file: filePdf, isReview: "wait" }
+    );
+    if (updatedPost) {
+      res.status(200).json({ message: "Update successfully" });
+    } else {
+      res.status(404).json({ message: "Update fail" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ reviewAssignment" });
+  }
+};
+
+export const showPdf = async (req, res) => {
+  try {
+    const ListStudents = await Account.findOne({
+      _id: req.params.id,
+    });
+
+    res.json({ success: true, data: ListStudents });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ listStudentHasManage" });
+  }
+};
+
+export const pdfStatusSubmit = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const updatedPost = await Account.findOneAndUpdate(
+      { _id: req.params.id },
+      { isReview: "done" }
+    );
+    if (updatedPost) {
+      res.status(200).json({ message: "Update successfully" });
+    } else {
+      res.status(404).json({ message: "Update fail" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ reviewAssignment" });
+  }
+};
+
 export const searchIdTeacher = async (req, res) => {
   try {
-    const ListStudents = await Account.find({ idTeacher: req.params.q });
+    const ListStudents = await Account.find({
+      idTeacher: req.params.q,
+    }).populate("idDepartment");
 
     res.status(200).json({ success: true, data: ListStudents });
   } catch (error) {

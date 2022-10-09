@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import Full from "./routes/full.js";
+import bodyParser from "body-parser";
 
 const PORT = process.env.PORT || 5000;
 
@@ -12,8 +13,8 @@ const DB_URL = `mongodb+srv://class369:class369@cluster0.qrjkqkk.mongodb.net/?re
 
 const app = express();
 app.use(cors());
-app.use(express.json({ extended: true }));
-app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({ limit: "50mb" }));
 mongoose
   .connect(DB_URL, {
     useNewUrlParser: true,
