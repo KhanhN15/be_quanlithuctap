@@ -60,7 +60,7 @@ const accountSchema = new Schema({
   },
   img: {
     type: String,
-    required: true,
+    required: false,
   },
   file: {
     type: String,

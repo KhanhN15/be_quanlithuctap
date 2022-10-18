@@ -54,12 +54,14 @@ import {
   createAccountEnterprise,
   search,
   addComments,
+  createAccountStudentHi,
 } from "../controllers/account.controller.js";
 const router = express.Router();
 
 router.post("/create-account", createAccount);
 router.post("/create-account-department", createAccountDepartment);
 router.post("/create-account-student", createAccountStudent);
+router.post("/create-account-student-hi", createAccountStudentHi);
 router.post("/create-account-dn", createAccountEnterprise);
 router.put("/update-account-student/:id", updateAccountStudent);
 router.delete("/delete-account-student/:id", deleteAccountStudent);

@@ -73,9 +73,48 @@ export const createAccountStudent = async (req, res) => {
     const {
       name,
       password,
+      msv,
       birthday,
       idDepartment,
       idTeacher,
+      lop,
+      address,
+      role,
+      img,
+      isAccept,
+      isTeacherAccept,
+    } = req.body;
+    const account = await Account.findOne({ name });
+
+    if (account) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Account already exist" });
+    }
+    const newUser = new Account({
+      ...req.body,
+    });
+    await newUser.save();
+    res.status(200).json({
+      success: true,
+      message: "Account created successfully",
+    });
+  } catch (error) {
+    console.log("====================================");
+    console.log(error);
+    console.log("====================================");
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+export const createAccountStudentHi = async (req, res) => {
+  try {
+    const {
+      name,
+      password,
+      msv,
+      birthday,
+      idEnterprise,
       lop,
       address,
       role,
