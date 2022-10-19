@@ -71,6 +71,10 @@ const accountSchema = new Schema({
     required: false,
     default: "wait",
   },
+  timeStart: {
+    type: String,
+    required: false,
+  },
 });
 // export collection name 'users' storing login infomation
 const Account = mongoose.model("Account", accountSchema);

@@ -55,6 +55,7 @@ import {
   search,
   addComments,
   createAccountStudentHi,
+  getStudentNoEnterprise,
 } from "../controllers/account.controller.js";
 const router = express.Router();
 
@@ -122,6 +123,7 @@ router.get("/show-list-student", showListStudent);
 router.get("/show-detail-assign-by-student/:id", ShowDetailAssignByStudent);
 router.put("/edit-account/:id", editAccount);
 router.get("/get-student-has-enterprise", getStudentHasEnterprise);
+router.get("/get-student-no-enterprise", getStudentNoEnterprise);
 
 router.get("/average-max", averageMax);
 router.get("/average-min", averageMin);

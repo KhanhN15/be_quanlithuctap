@@ -122,6 +122,7 @@ export const createAccountStudentHi = async (req, res) => {
       isAccept,
       isTeacherAccept,
     } = req.body;
+
     const account = await Account.findOne({ name });
 
     if (account) {
@@ -469,7 +470,9 @@ export const showOnlyStudentNoChoose = async (req, res) => {
   try {
     const ListStudents = await Account.find({
       role: "student",
-    }).populate("idDepartment");
+    })
+      .populate("idDepartment")
+      .populate("idEnterprise");
 
     res.status(200).json({ success: true, data: ListStudents });
   } catch (error) {
@@ -495,10 +498,10 @@ export const showOnlyTeacher = async (req, res) => {
 
 export const addDepartmentManage = async (req, res) => {
   try {
-    const { idDepartment, idTeacher } = req.body;
+    const { idDepartment, idTeacher, timeStart } = req.body;
     const updatedPost = await Account.findOneAndUpdate(
       { _id: req.params.id },
-      { idDepartment, idTeacher }
+      { idDepartment, idTeacher, timeStart }
     );
     if (updatedPost) {
       res.status(200).json({ message: "Update successfully" });
@@ -682,7 +685,9 @@ export const searchIdTeacher = async (req, res) => {
   try {
     const ListStudents = await Account.find({
       idTeacher: req.params.q,
-    }).populate("idDepartment");
+    })
+      .populate("idDepartment")
+      .populate("idEnterprise");
 
     res.status(200).json({ success: true, data: ListStudents });
   } catch (error) {
@@ -924,6 +929,23 @@ export const getStudentHasEnterprise = async (req, res) => {
     const ListStudents = await Account.find({
       isAccept: "done",
       isTeacherAccept: "done",
+    })
+      .populate("idEnterprise")
+      .populate("idTeacher")
+      .populate("idDepartment");
+
+    res.json({ success: true, data: ListStudents });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error ~ listStudentHasManage" });
+  }
+};
+
+export const getStudentNoEnterprise = async (req, res) => {
+  try {
+    const ListStudents = await Account.find({
+      isAccept: "wait",
     })
       .populate("idEnterprise")
       .populate("idTeacher")
