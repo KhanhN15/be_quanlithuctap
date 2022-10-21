@@ -946,6 +946,7 @@ export const getStudentNoEnterprise = async (req, res) => {
   try {
     const ListStudents = await Account.find({
       isAccept: "wait",
+      role: "student",
     })
       .populate("idEnterprise")
       .populate("idTeacher")
